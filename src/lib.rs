@@ -1,3 +1,7 @@
+// TODO: Tighten up linting once csv parsing has been solved.
+#![allow(dead_code)]
+#![allow(unused_imports)]
+
 struct Exercise {
     name: String,
     // Note: We track exerciseType for calculation purposes, but not for data collection decision making, which is controlled by tracking_config.
@@ -58,3 +62,103 @@ struct Workout {
 // THOUGHTS: Workout creation methods will probably differ a lot by frontend, so maybe don't create functions for that here.
 // Instead, work out data analytics functions, how to store data, some kind of data persistence solution, and so on.
 // We could also create parsing libraries to import Strong data, for example.
+
+// Strong data import: The exported data does not contain exercise specifications. Write an import facility with user input that has the user specify each new exercise, then converts to internal format.
+// For import purposes, we might also want an aliasing facility to let the names from apps differ from internal names.
+
+use serde::Deserialize;
+use serde_with::{DeserializeFromStr, SerializeDisplay};
+use std::{fmt, str::FromStr};
+use time::{OffsetDateTime, PrimitiveDateTime, Time};
+
+// Use serde_with's derives to implement serialization and deserialization with the Display and FromStr traits.
+#[derive(SerializeDisplay, DeserializeFromStr, Debug)]
+pub struct StrongDuration {
+    hours: u32,
+    minutes: u32,
+}
+
+impl fmt::Display for StrongDuration {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.hours == 0 {
+            write!(f, "{}m", self.minutes)
+        } else {
+            write!(f, "{}h {}m", self.hours, self.minutes)
+        }
+    }
+}
+impl FromStr for StrongDuration {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        // Split on ' '. Check how many items you get. If there's two, check for final character 'h' and 'm' respectively and parse the preceding characters. If one, check for 'h' or 'm'. Can be expanded later to allow for things like '1d 3h 30m' if needed.
+        let parts = s.split(' ').collect::<Vec<_>>();
+        let mut hours;
+        let mut minutes;
+        match parts.len() {
+            2 => {
+                hours = parse_suffixed_integer(parts[0], 'h')?;
+                minutes = parse_suffixed_integer(parts[1], 'm')?;
+            }
+            1 => {
+                // TODO: If there's only one entry, it can be a number of seconds. Fix.
+                hours = 0;
+                minutes = parse_suffixed_integer(parts[0], 'm')?;
+            }
+            _ => {
+                return Err(format!(
+                    "The following duration specifier has {} parts, should have 1 or 2.\n {s}",
+                    parts.len()
+                ));
+            }
+        };
+        if minutes >= 60 {
+            let extra_hours = minutes / 60;
+            hours += extra_hours;
+            minutes -= extra_hours * 60;
+        }
+        Ok(StrongDuration { hours, minutes })
+    }
+}
+
+fn parse_suffixed_integer(s: &str, suffix: char) -> Result<u32, <StrongDuration as FromStr>::Err> {
+    let chars = s.chars().collect::<Vec<_>>();
+    if chars[chars.len() - 1] != suffix {
+        return Err(format!("Invalid suffix, should be {suffix}"));
+    }
+    Ok(s[0..chars.len() - 1]
+        .parse()
+        .map_err(|_| format!("Invalid number before suffix {suffix}"))?)
+}
+
+time::serde::format_description!(
+    strong_date,
+    PrimitiveDateTime,
+    "[year]-[month]-[day] [hour]:[minute]:[second]"
+);
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "PascalCase")]
+pub struct StrongData {
+    #[serde(with = "strong_date")]
+    pub date: PrimitiveDateTime,
+    // pub date: String,
+    #[serde(rename = "Workout Name")]
+    pub workout_name: String,
+    // TODO: Parsing to Time doesn't work, fix
+    pub duration: StrongDuration,
+    // pub duration: String,
+    #[serde(rename = "Exercise Name")]
+    pub exercise_name: String,
+    #[serde(rename = "Set Order")]
+    pub set_order: u16,
+    pub weight: f64,
+    pub reps: u16,
+    pub distance: f64,
+    pub seconds: u16,
+    pub notes: Option<String>,
+    #[serde(rename = "Workout Notes")]
+    pub workout_notes: Option<String>,
+    #[serde(rename = "RPE")]
+    pub rpe: Option<f32>,
+}
