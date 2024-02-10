@@ -63,6 +63,8 @@ struct Workout {
 // Instead, work out data analytics functions, how to store data, some kind of data persistence solution, and so on.
 // We could also create parsing libraries to import Strong data, for example.
 
+// TODO: Move the Strong data parsing/import logic into a separate module. Export the StrongData type, then do the conversion to our format in a different module.
+//
 // Strong data import: The exported data does not contain exercise specifications. Write an import facility with user input that has the user specify each new exercise, then converts to internal format.
 // For import purposes, we might also want an aliasing facility to let the names from apps differ from internal names.
 
@@ -76,34 +78,46 @@ use time::{OffsetDateTime, PrimitiveDateTime, Time};
 pub struct StrongDuration {
     hours: u32,
     minutes: u32,
+    seconds: u32,
 }
 
 impl fmt::Display for StrongDuration {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.hours == 0 {
-            write!(f, "{}m", self.minutes)
-        } else {
-            write!(f, "{}h {}m", self.hours, self.minutes)
+        let mut result = String::new();
+        if self.hours != 0 {
+            result += &format!("{}h", self.hours);
         }
+        if self.minutes != 0 {
+            result += &format!("{}m", self.minutes);
+        }
+        result += &format!("{}s", self.seconds);
+        write!(f, "{}", result)
     }
 }
 impl FromStr for StrongDuration {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        // Split on ' '. Check how many items you get. If there's two, check for final character 'h' and 'm' respectively and parse the preceding characters. If one, check for 'h' or 'm'. Can be expanded later to allow for things like '1d 3h 30m' if needed.
         let parts = s.split(' ').collect::<Vec<_>>();
-        let mut hours;
-        let mut minutes;
+        let mut hours = 0;
+        let mut minutes = 0;
+        let mut seconds = 0;
         match parts.len() {
+            3 => {
+                hours = parse_suffixed_integer(parts[0], 'h')?;
+                minutes = parse_suffixed_integer(parts[1], 'm')?;
+                seconds = parse_suffixed_integer(parts[2], 's')?;
+            }
             2 => {
                 hours = parse_suffixed_integer(parts[0], 'h')?;
                 minutes = parse_suffixed_integer(parts[1], 'm')?;
             }
             1 => {
-                // TODO: If there's only one entry, it can be a number of seconds. Fix.
-                hours = 0;
-                minutes = parse_suffixed_integer(parts[0], 'm')?;
+                if let Ok(s) = parse_suffixed_integer(parts[0], 's') {
+                    seconds = s;
+                } else {
+                    minutes = parse_suffixed_integer(parts[0], 'm')?;
+                }
             }
             _ => {
                 return Err(format!(
@@ -112,12 +126,21 @@ impl FromStr for StrongDuration {
                 ));
             }
         };
+        if seconds >= 60 {
+            let extra_minutes = seconds / 60;
+            minutes += extra_minutes;
+            seconds -= extra_minutes * 60;
+        }
         if minutes >= 60 {
             let extra_hours = minutes / 60;
             hours += extra_hours;
             minutes -= extra_hours * 60;
         }
-        Ok(StrongDuration { hours, minutes })
+        Ok(StrongDuration {
+            hours,
+            minutes,
+            seconds,
+        })
     }
 }
 

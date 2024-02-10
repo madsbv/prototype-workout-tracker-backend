@@ -39,7 +39,6 @@ fn run() -> anyhow::Result<()> {
     let mut rdr = csv::Reader::from_reader(io::stdin());
     for result in rdr.deserialize() {
         let record: StrongData = result?;
-        // let record: std::collections::HashMap<String, String> = result?;
         println!("{:#?}", record);
     }
     Ok(())
