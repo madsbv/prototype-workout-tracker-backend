@@ -74,11 +74,11 @@ use std::{fmt, str::FromStr};
 use time::{OffsetDateTime, PrimitiveDateTime, Time};
 
 // Use serde_with's derives to implement serialization and deserialization with the Display and FromStr traits.
-#[derive(SerializeDisplay, DeserializeFromStr, Debug)]
+#[derive(SerializeDisplay, DeserializeFromStr, Debug, PartialEq, PartialOrd)]
 pub struct StrongDuration {
-    hours: u32,
-    minutes: u32,
-    seconds: u32,
+    pub hours: u32,
+    pub minutes: u32,
+    pub seconds: u32,
 }
 
 impl fmt::Display for StrongDuration {
@@ -160,7 +160,7 @@ time::serde::format_description!(
     "[year]-[month]-[day] [hour]:[minute]:[second]"
 );
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct StrongData {
     #[serde(with = "strong_date")]
