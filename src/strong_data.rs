@@ -29,6 +29,7 @@ impl fmt::Display for StrongDuration {
         write!(f, "{}", result)
     }
 }
+
 impl FromStr for StrongDuration {
     type Err = String;
 

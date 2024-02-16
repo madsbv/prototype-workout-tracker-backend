@@ -7,11 +7,11 @@ pub mod strong_data;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct Exercise {
+    // TODO: How do we encode aliases for exercises, especially in such a way that we can easily change the preferred name?
     name: String,
     // Note: We track exerciseType for calculation purposes, but not for data collection decision making, which is controlled by tracking_config.
     // E.g. a "bodyweight" exercise should take into account the users weight for calculations, and volume computations for barbells vs dumbbells might be different.
     exercise_type: ExerciseType,
-    // FEAT: Consider changing the data type to be some kind of list instead, to allow specifying multiple muscles, or even no muscles if desired.
     muscles_trained: Vec<Muscle>,
     tracking_config: TrackingConfig,
     pinned_note: Option<String>,
@@ -36,6 +36,7 @@ enum ExerciseType {
     Machine,
     Bodyweight,
     // TODO: Do I want to include data about different barbells as type information? It could be done similarly to the Machine feature discussed above. On the other hand, different bar types (meaning straight vs cambered vs EZ bar vs safety squat bar...) are kind of different exercises altogether, so maybe tracking them together is not worth the complexity?
+    // It would be good to be able to keep variations of bar type close to each other, but I'm not sure how to encode this. Maybe we just do good search instead.
     Barbell,
     Dumbbell,
     Kettlebell,

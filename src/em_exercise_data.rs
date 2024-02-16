@@ -44,7 +44,7 @@ impl From<EmExerciseSpecification> for Exercise {
     }
 }
 
-// Parse the relevant parts of data/clean_exercise_data.csv
+// Struct into which to parse the relevant parts of data/em_exercise_specs.csv
 #[derive(Deserialize, Debug, PartialEq)]
 pub struct EmExerciseSpecification {
     exercise: String,
@@ -84,7 +84,7 @@ mod tests {
     #[test]
     fn test_em_exercise_specs_parse() {
         let mut rdr = csv::Reader::from_reader(
-            fs::File::open("data/em_exercise_specs.csv").expect("File is readable"),
+            fs::File::open("test_data/em_exercise_specs.csv").expect("File is readable"),
         );
         for result in rdr.deserialize::<EmExerciseSpecification>() {
             let record: Exercise = result

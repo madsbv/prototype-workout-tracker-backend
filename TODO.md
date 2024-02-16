@@ -17,4 +17,9 @@
 
 # Data structure decisions
 - [ ] How do we represent completed workouts vs workouts in progress vs templates?
+- [ ] How do we deal with closely related variations, for example different bars used or doing the same machine exercise on different brands of machine?
+- [ ] How do we handle names of exercises, and integrating names from different import mechanisms?
+- [ ]   TODO: Use something like the nucleo or fzf-wrapped fuzzy matching crates to write a simple TUI loop to match Strong exercise names against em exercise specs. Test how well the matches work, and automate adding aliases to our exercise names using these matches.
+        fzf-wrapped looks like the easiest thing to use, so maybe start there.
+- [ ]       Once this is working, try to do a full export from Strong with all exercises, and do matching against that to get a complete exercise list.
 
