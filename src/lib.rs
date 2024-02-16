@@ -68,9 +68,8 @@ struct Workout {
 // Strong data import: The exported data does not contain exercise specifications. Write an import facility with user input that has the user specify each new exercise, then converts to internal format.
 // For import purposes, we might also want an aliasing facility to let the names from apps differ from internal names.
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_with::{DeserializeFromStr, SerializeDisplay};
-use std::{fmt, str::FromStr};
 use time::{OffsetDateTime, PrimitiveDateTime, Time};
 
 // Use serde_with's derives to implement serialization and deserialization with the Display and FromStr traits.
@@ -81,20 +80,21 @@ pub struct StrongDuration {
     pub seconds: u32,
 }
 
-impl fmt::Display for StrongDuration {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut result = String::new();
+impl std::fmt::Display for StrongDuration {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut parts: Vec<String> = vec![];
         if self.hours != 0 {
-            result += &format!("{}h", self.hours);
+            parts.push(format!("{}h", self.hours));
         }
         if self.minutes != 0 {
-            result += &format!("{}m", self.minutes);
+            parts.push(format!("{}m", self.minutes));
         }
-        result += &format!("{}s", self.seconds);
+        parts.push(format!("{}s", self.seconds));
+        let result = parts.join(" ");
         write!(f, "{}", result)
     }
 }
-impl FromStr for StrongDuration {
+impl std::str::FromStr for StrongDuration {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -144,7 +144,10 @@ impl FromStr for StrongDuration {
     }
 }
 
-fn parse_suffixed_integer(s: &str, suffix: char) -> Result<u32, <StrongDuration as FromStr>::Err> {
+fn parse_suffixed_integer(
+    s: &str,
+    suffix: char,
+) -> Result<u32, <StrongDuration as std::str::FromStr>::Err> {
     let chars = s.chars().collect::<Vec<_>>();
     if chars[chars.len() - 1] != suffix {
         return Err(format!("Invalid suffix, should be {suffix}"));
@@ -160,7 +163,7 @@ time::serde::format_description!(
     "[year]-[month]-[day] [hour]:[minute]:[second]"
 );
 
-#[derive(Deserialize, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 #[serde(rename_all = "PascalCase")]
 pub struct StrongData {
     #[serde(with = "strong_date")]
