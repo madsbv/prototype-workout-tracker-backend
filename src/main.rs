@@ -7,7 +7,7 @@
 
 use clap::{Parser, Subcommand};
 use std::io;
-use workout_tracker::StrongData;
+use workout_tracker_backend::strong_data::StrongData;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
