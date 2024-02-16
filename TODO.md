@@ -13,4 +13,5 @@
 - [ ] Serialization and deserialization of exercises and workouts
 - [ ] Facilities to modify exercise types?
 - [ ] List of default exercises saved in app
+- [ ] Exercise aliases, for searching in app and parsing of outside data sources
 
