@@ -37,7 +37,7 @@ enum Command {
 // }
 
 fn run() -> anyhow::Result<()> {
-    let mut rdr = csv::Reader::from_reader(fs::File::open("data/clean_exercise_data.csv")?);
+    let mut rdr = csv::Reader::from_reader(fs::File::open("data/em_exercise_specs.csv")?);
     for result in rdr.deserialize::<EmExerciseSpecification>() {
         use workout_tracker_backend::em_exercise_data::EmExerciseSpecification;
         use workout_tracker_backend::Exercise;

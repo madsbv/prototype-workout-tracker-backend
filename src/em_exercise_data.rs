@@ -74,3 +74,35 @@ where
         _ => Err(de::Error::unknown_variant(s, &["SI", "NO"])),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    // use super::super::Exercise;
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn test_em_exercise_specs_parse() {
+        let mut rdr = csv::Reader::from_reader(
+            fs::File::open("data/em_exercise_specs.csv").expect("File is readable"),
+        );
+        for result in rdr.deserialize::<EmExerciseSpecification>() {
+            let record: Exercise = result
+                .expect("Exercise specification csv parses correctly")
+                .into();
+            // Every parsed exercise should train some muscle
+            assert!(record.muscles_trained.len() != 0);
+            // For every exercise type, we should track *something*
+            assert!(
+                record.tracking_config.weight
+                    || record.tracking_config.time
+                    || record.tracking_config.reps
+                    || record.tracking_config.distance
+            );
+            // Every exercise should have a non-empty name
+            assert!(record.name.len() != 0);
+            // We shouldn't have any pinned notes on directly parsed data
+            assert!(Option::is_none(&record.pinned_note));
+        }
+    }
+}

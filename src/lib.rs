@@ -1,5 +1,3 @@
-// TODO: Tighten up linting once csv parsing has been solved.
-#![allow(dead_code)]
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, IntoEnumIterator};
 // use strum_macros::EnumIter;
@@ -92,6 +90,7 @@ enum Muscle {
     HipAdductors,
     HipFlexors,
     Lats,
+    Obliques,
     Quads,
     RearDelts,
     RotatorCuffs,
@@ -107,8 +106,7 @@ impl TryFrom<&str> for Muscle {
     // Take a best guess at the muscle described by s.
     fn try_from(s: &str) -> Result<Self, Self::Error> {
         for muscle in Muscle::iter() {
-            let aliases = muscle.get_aliases();
-            if aliases.contains(&s.to_string()) {
+            if muscle.get_aliases().contains(&s.to_string()) {
                 return Ok(muscle);
             }
         }
@@ -119,11 +117,17 @@ impl TryFrom<&str> for Muscle {
 impl Muscle {
     fn get_aliases(&self) -> Vec<String> {
         match self {
-            Muscle::Abs => vec!["abs", "abdominals", "obliques"],
+            Muscle::Abs => vec!["abs", "abdominals"],
             Muscle::Biceps => vec!["biceps"],
             Muscle::Calves => vec!["calves", "calf"],
             Muscle::Chest => vec!["chest", "pecs", "pectorals"],
-            Muscle::Forearms => vec!["forearms", "fingers", "wrists", "forearm flexors"],
+            Muscle::Forearms => vec![
+                "forearms",
+                "fingers",
+                "wrists",
+                "forearm flexors",
+                "forearm extensors",
+            ],
             Muscle::FrontDelts => vec!["front deltoid", "front delts"],
             Muscle::Glutes => vec!["glutes"],
             Muscle::Hamstrings => vec!["hamstrings"],
@@ -131,11 +135,12 @@ impl Muscle {
             Muscle::HipAdductors => vec!["adductors", "hip adductors"],
             Muscle::HipFlexors => vec!["hip flexors", "psoas"],
             Muscle::Lats => vec!["lats"],
+            Muscle::Obliques => vec!["obliques"],
             Muscle::Quads => vec!["quadriceps", "quads"],
             Muscle::RearDelts => vec!["rear delts", "rear deltoids"],
             Muscle::RotatorCuffs => vec!["rotator cuffs"],
             Muscle::SideDelts => vec!["side delts", "side deltoids"],
-            Muscle::SpinalErectors => vec!["spinal erectors", "erector spinae"],
+            Muscle::SpinalErectors => vec!["spinal erectors", "erector spinae", "lower back"],
             Muscle::Traps => vec!["traps", "trapezius"],
             Muscle::Triceps => vec!["triceps"],
         }

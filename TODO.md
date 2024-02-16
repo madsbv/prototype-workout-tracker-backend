@@ -10,8 +10,11 @@
 # Features
 - [ ] CLI loop to define exercise types
 - [ ] Loop to define exercises for every Strong data entry
-- [ ] Serialization and deserialization of exercises and workouts
+- [x] Serialization and deserialization of exercises and workouts
 - [ ] Facilities to modify exercise types?
 - [ ] List of default exercises saved in app
 - [ ] Exercise aliases, for searching in app and parsing of outside data sources
+
+# Data structure decisions
+- [ ] How do we represent completed workouts vs workouts in progress vs templates?
 
