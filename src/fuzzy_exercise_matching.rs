@@ -9,7 +9,7 @@ pub fn search_exercises<'a, 'b>(
 ) -> Vec<&'b Exercise> {
     let mut matcher = Matcher::new(nucleo_matcher::Config::DEFAULT);
     let pattern = Pattern::parse(
-        dbg!(&simplify_exercise_name(name)),
+        &simplify_exercise_name(name),
         CaseMatching::Ignore,
         Normalization::Smart,
     );
@@ -44,6 +44,7 @@ pub fn identify_exercise<'a, 'b>(
 }
 
 // Try to strip out symbols and standardize certain words to improve search results
+// XXX: This would be a natural place to implement exercise name aliases as well.
 fn simplify_exercise_name(name: &str) -> String {
     let symbols = [
         ',', '.', '(', ')', '[', ']', '{', '}', ';', ':', ' ', '-', '_',
@@ -68,14 +69,23 @@ mod tests {
         );
         let em_exercises: Vec<Exercise> = em_rdr.deserialize::<em_exercise_data::EmExerciseSpecification>().map(|em| em.expect("Exercise specifications test data parse correctly (i.e. test_em_exercise_specs_parse passes)").into()).collect();
 
-        for sr in strong_records {
+        // A selection of records that we know matches some exercise in em_exercise_specs.
+        // This lets us test the functionality of identify_exercise against a known good list of inputs.
+        let curated_strong_records = [
+            &strong_records[20],
+            &strong_records[50],
+            &strong_records[90],
+        ];
+
+        // Easily see which records we're testing with `cargo test -- --nocapture`
+        for sr in dbg!(curated_strong_records) {
             let best_match = identify_exercise(&sr.exercise_name, &em_exercises);
             if Option::is_none(&best_match) {
                 eprintln!("{sr:#?}");
             }
-            // We should have enough pre-populated exercises to match all known exercises from strong.
-            // TODO: Once we have a more stable notion of our ultimate source of exercises, we should test against that source instead of em_exercise_specs, and in particular move this part of the test.
             assert!(Option::is_some(&best_match));
         }
+        // TODO: We should eventually have enough pre-populated exercises to match all known exercises from Strong.
+        // Once we have a more stable notion of our ultimate source of exercises, we should also run a version of this test against that source, and require that ALL exercises from Strong match against something.
     }
 }
