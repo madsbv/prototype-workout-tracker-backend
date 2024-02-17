@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, IntoEnumIterator};
-// use strum_macros::EnumIter;
 
+// TODO: Think about how to structure the library and its public API.
 pub mod em_exercise_data;
+pub mod fuzzy_exercise_matching;
 pub mod strong_data;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
@@ -44,6 +45,23 @@ enum ExerciseType {
     Cardio,
     // Fallback variant
     Other,
+}
+
+impl std::fmt::Display for ExerciseType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let result = match self {
+            ExerciseType::Machine => "Machine",
+            ExerciseType::Bodyweight => "Bodyweight",
+            ExerciseType::Barbell => "Barbell",
+            ExerciseType::Dumbbell => "Dumbbell",
+            ExerciseType::Kettlebell => "Kettlebell",
+            ExerciseType::Stretch => "Stretch",
+            ExerciseType::Cardio => "Cardio",
+            ExerciseType::Other => "Other",
+        }
+        .to_string();
+        write!(f, "{}", result)
+    }
 }
 
 impl ExerciseType {
