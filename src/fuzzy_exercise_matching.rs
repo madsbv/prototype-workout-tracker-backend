@@ -58,16 +58,13 @@ mod tests {
 
     #[test]
     fn test_identify_exercise() {
-        let mut strong_rdr = csv::Reader::from_reader(
-            std::fs::File::open("test_data/strong_test_data.csv")
-                .expect("File test_data/strong_test_data.csv exists and is readable"),
-        );
-        let strong_records: Vec<strong_data::StrongData> = strong_rdr.deserialize().map(|r| r.expect("Strong app test data deserializes correctly (i.e. test_actual_strong_data_deserializes passes)")).collect();
+        let strong_records =
+            strong_data::parse_strong_csv_to_exercise_data("test_data/strong_test_data.csv")
+                .expect("Strong app test data parses to valid StrongData structs");
 
-        let mut em_rdr = csv::Reader::from_reader(
-            std::fs::File::open("test_data/em_exercise_specs.csv").expect("File is readable"),
-        );
-        let em_exercises: Vec<Exercise> = em_rdr.deserialize::<em_exercise_data::EmExerciseSpecification>().map(|em| em.expect("Exercise specifications test data parse correctly (i.e. test_em_exercise_specs_parse passes)").into()).collect();
+        let em_exercises =
+            em_exercise_data::parse_em_spec_csv_to_exercises("test_data/em_exercise_specs.csv")
+                .expect("test exercise specifications parse correctly");
 
         // A selection of records that we know matches some exercise in em_exercise_specs.
         // This lets us test the functionality of identify_exercise against a known good list of inputs.

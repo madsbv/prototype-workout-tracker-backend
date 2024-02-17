@@ -1,11 +1,17 @@
-// Strong data import: The exported data does not contain exercise specifications. Write an import facility with user input that has the user specify each new exercise, then converts to internal format.
-// For import purposes, we might also want an aliasing facility to let the names from apps differ from internal names.
-
 use serde::{Deserialize, Serialize};
 use serde_with::{DeserializeFromStr, SerializeDisplay};
 use std::fmt;
 use std::str::FromStr;
 use time::PrimitiveDateTime;
+
+pub fn parse_strong_csv_to_exercise_data(path: &str) -> anyhow::Result<Vec<StrongData>> {
+    let mut strong_rdr = csv::Reader::from_reader(std::fs::File::open(path)?);
+    strong_rdr
+        .deserialize::<StrongData>()
+        // It doesn't seem like this should be necessary
+        .map(|s| Ok(s?))
+        .collect()
+}
 
 // Use serde_with's derives to implement serialization and deserialization with the Display and FromStr traits.
 #[derive(SerializeDisplay, DeserializeFromStr, Debug, PartialEq, PartialOrd)]
@@ -197,13 +203,7 @@ Date,Workout Name,Duration,Exercise Name,Set Order,Weight,Reps,Distance,Seconds,
 
     #[test]
     fn test_actual_strong_data_deserializes() {
-        let mut rdr = csv::Reader::from_reader(
-            std::fs::File::open("test_data/strong_test_data.csv")
-                .expect("File test_data/strong_test_data.csv exists and is readable"),
-        );
-        for result in rdr.deserialize() {
-            let _: StrongData =
-                result.expect("Actual CSV exported from Strong app deserializes validly");
-        }
+        let _ = parse_strong_csv_to_exercise_data("test_data/strong_test_data.csv")
+            .expect("Strong app test data parses to valid StrongData structs");
     }
 }

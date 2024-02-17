@@ -13,6 +13,7 @@
 - [x] Serialization and deserialization of exercises and workouts
 - [ ] Facilities to modify exercise types?
 - [ ] List of default exercises saved in app
+- [ ]   Should this just be some const Strings embedded in a separate Rust file, instead of reading and parsing CSV's on every load?
 - [ ] Exercise aliases, for searching in app and parsing of outside data sources
 
 # Data structure decisions

@@ -7,7 +7,7 @@
 
 use clap::{Parser, Subcommand};
 use std::{fs, io};
-use workout_tracker_backend::em_exercise_data::EmExerciseSpecification;
+use workout_tracker_backend::em_exercise_data::parse_em_spec_csv_to_exercises;
 use workout_tracker_backend::strong_data::StrongData;
 
 #[derive(Parser, Debug)]
@@ -37,13 +37,6 @@ enum Command {
 // }
 
 fn run() -> anyhow::Result<()> {
-    let mut rdr = csv::Reader::from_reader(fs::File::open("data/em_exercise_specs.csv")?);
-    for result in rdr.deserialize::<EmExerciseSpecification>() {
-        use workout_tracker_backend::em_exercise_data::EmExerciseSpecification;
-        use workout_tracker_backend::Exercise;
-        let record: Exercise = result?.into();
-        println!("{:#?}", record);
-    }
     Ok(())
 }
 

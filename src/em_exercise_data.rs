@@ -3,6 +3,15 @@ use inflector::Inflector;
 use itertools::Itertools;
 use serde::{de, Deserialize};
 
+pub fn parse_em_spec_csv_to_exercises(path: &str) -> anyhow::Result<Vec<Exercise>> {
+    let mut em_rdr = csv::Reader::from_reader(std::fs::File::open(path)?);
+    em_rdr
+        .deserialize::<EmExerciseSpecification>()
+        // It doesn't seem like this should be necessary
+        .map(|em| Ok(em?.into()))
+        .collect()
+}
+
 impl From<EmExerciseSpecification> for Exercise {
     fn from(em: EmExerciseSpecification) -> Exercise {
         let name = em.exercise.to_sentence_case();
@@ -46,7 +55,7 @@ impl From<EmExerciseSpecification> for Exercise {
 
 // Struct into which to parse the relevant parts of data/em_exercise_specs.csv
 #[derive(Deserialize, Debug, PartialEq)]
-pub struct EmExerciseSpecification {
+struct EmExerciseSpecification {
     exercise: String,
     #[serde(rename = "two sided")]
     #[serde(deserialize_with = "deserialize_bool_from_yes_no")]
@@ -79,17 +88,12 @@ where
 mod tests {
     // use super::super::Exercise;
     use super::*;
-    use std::fs;
 
     #[test]
     fn test_em_exercise_specs_parse() {
-        let mut rdr = csv::Reader::from_reader(
-            fs::File::open("test_data/em_exercise_specs.csv").expect("File is readable"),
-        );
-        for result in rdr.deserialize::<EmExerciseSpecification>() {
-            let record: Exercise = result
-                .expect("Exercise specification csv parses correctly")
-                .into();
+        for record in parse_em_spec_csv_to_exercises("test_data/em_exercise_specs.csv")
+            .expect("test exercise specifications parse correctly")
+        {
             // Every parsed exercise should train some muscle
             assert!(record.muscles_trained.len() != 0);
             // For every exercise type, we should track *something*
