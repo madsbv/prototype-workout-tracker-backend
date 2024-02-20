@@ -2,9 +2,12 @@ use super::{Exercise, ExerciseType, Muscle};
 use inflector::Inflector;
 use itertools::Itertools;
 use serde::{de, Deserialize};
+use std::path::Path;
 
-pub fn parse_em_spec_csv_to_exercises(path: &std::path::Path) -> anyhow::Result<Vec<Exercise>> {
-    let mut em_rdr = csv::Reader::from_reader(std::fs::File::open(path)?);
+// Convenience function to get test data in various modules
+#[allow(dead_code)]
+pub(crate) fn parse_em_spec_csv_to_exercises(path: &Path) -> anyhow::Result<Vec<Exercise>> {
+    let mut em_rdr = csv::Reader::from_path(path)?;
     em_rdr
         .deserialize::<EmExerciseSpecification>()
         // It doesn't seem like this should be necessary
@@ -55,7 +58,7 @@ impl From<EmExerciseSpecification> for Exercise {
 
 // Struct into which to parse the relevant parts of data/em_exercise_specs.csv
 #[derive(Deserialize, Debug, PartialEq)]
-struct EmExerciseSpecification {
+pub(crate) struct EmExerciseSpecification {
     exercise: String,
     #[serde(rename = "two sided")]
     #[serde(deserialize_with = "deserialize_bool_from_yes_no")]

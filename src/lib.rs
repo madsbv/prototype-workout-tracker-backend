@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use strum::{EnumIter, IntoEnumIterator};
 
 // TODO: Think about how to structure the library and its public API.
+pub mod default_exercise_list;
 pub mod em_exercise_data;
 pub mod fuzzy_exercise_matching;
 pub mod strong_data;

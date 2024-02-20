@@ -4,7 +4,7 @@ use std::time::{Duration, SystemTime};
 pub fn parse_strong_csv_to_exercise_data(
     path: &std::path::Path,
 ) -> anyhow::Result<Vec<StrongData>> {
-    let mut strong_rdr = csv::Reader::from_reader(std::fs::File::open(path)?);
+    let mut strong_rdr = csv::Reader::from_path(path)?;
     strong_rdr
         .deserialize::<StrongData>()
         // It doesn't seem like this should be necessary
