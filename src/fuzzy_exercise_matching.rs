@@ -1,6 +1,9 @@
-use super::*;
+use super::Exercise;
 use itertools::Itertools;
-use nucleo_matcher::{pattern::*, Matcher};
+use nucleo_matcher::{
+    pattern::{CaseMatching, Normalization, Pattern},
+    Matcher,
+};
 
 /// Search `exercise_list` for exercises whose name and exercise type together match `name`. Return list of possible matches according to fuzzy finder (nucleo), sorted with the best match first.
 pub fn search_exercises<'b>(name: &str, exercise_list: &'b [Exercise]) -> Vec<&'b Exercise> {
@@ -48,7 +51,8 @@ fn simplify_exercise_name(name: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::identify_exercise;
+    use crate::{em_exercise_data, strong_data};
 
     #[test]
     fn test_identify_exercise() {

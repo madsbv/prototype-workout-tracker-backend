@@ -80,14 +80,13 @@ where
     match s {
         "yes" => Ok(true),
         "no" => Ok(false),
-        _ => Err(de::Error::unknown_variant(s, &["SI", "NO"])),
+        _ => Err(de::Error::unknown_variant(s, &["yes", "no"])),
     }
 }
 
 #[cfg(test)]
 mod tests {
-    // use super::super::Exercise;
-    use super::*;
+    use super::parse_em_spec_csv_to_exercises;
 
     #[test]
     fn test_em_exercise_specs_parse() {
