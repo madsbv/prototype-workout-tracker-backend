@@ -56,13 +56,15 @@ mod tests {
 
     #[test]
     fn test_identify_exercise() {
-        let strong_records =
-            strong_data::parse_strong_csv_to_exercise_data("test_data/strong_test_data.csv")
-                .expect("Strong app test data parses to valid StrongData structs");
+        let strong_records = strong_data::parse_strong_csv_to_exercise_data(
+            &std::path::PathBuf::from("test_data/strong_test_data.csv"),
+        )
+        .expect("Strong app test data parses to valid StrongData structs");
 
-        let em_exercises =
-            em_exercise_data::parse_em_spec_csv_to_exercises("test_data/em_exercise_specs.csv")
-                .expect("test exercise specifications parse correctly");
+        let em_exercises = em_exercise_data::parse_em_spec_csv_to_exercises(
+            &std::path::PathBuf::from("test_data/em_exercise_specs.csv"),
+        )
+        .expect("test exercise specifications parse correctly");
 
         // A selection of records that we know matches some exercise in em_exercise_specs.
         // This lets us test the functionality of identify_exercise against a known good list of inputs.

@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, SystemTime};
 
-pub fn parse_strong_csv_to_exercise_data(path: &str) -> anyhow::Result<Vec<StrongData>> {
+pub fn parse_strong_csv_to_exercise_data(
+    path: &std::path::Path,
+) -> anyhow::Result<Vec<StrongData>> {
     let mut strong_rdr = csv::Reader::from_reader(std::fs::File::open(path)?);
     strong_rdr
         .deserialize::<StrongData>()
@@ -99,7 +101,9 @@ Date,Workout Name,Duration,Exercise Name,Set Order,Weight,Reps,Distance,Seconds,
 
     #[test]
     fn test_actual_strong_data_deserializes() {
-        let _ = parse_strong_csv_to_exercise_data("test_data/strong_test_data.csv")
-            .expect("Strong app test data parses to valid StrongData structs");
+        let _ = parse_strong_csv_to_exercise_data(&std::path::PathBuf::from(
+            "test_data/strong_test_data.csv",
+        ))
+        .expect("Strong app test data parses to valid StrongData structs");
     }
 }
