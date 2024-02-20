@@ -1,3 +1,11 @@
+#![warn(clippy::all, clippy::pedantic)]
+#![allow(
+    clippy::missing_errors_doc,
+    clippy::wildcard_imports,
+    clippy::must_use_candidate,
+    clippy::struct_excessive_bools
+)]
+
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, IntoEnumIterator};
 
@@ -60,12 +68,12 @@ impl std::fmt::Display for ExerciseType {
             ExerciseType::Other => "Other",
         }
         .to_string();
-        write!(f, "{}", result)
+        write!(f, "{result}")
     }
 }
 
 impl ExerciseType {
-    pub fn default_tracking(self: &Self) -> TrackingConfig {
+    pub fn default_tracking(&self) -> TrackingConfig {
         match self {
             Self::Machine
             | Self::Bodyweight
@@ -164,7 +172,7 @@ impl Muscle {
             Muscle::Triceps => vec!["triceps"],
         }
         .iter()
-        .map(|s| s.to_string())
+        .map(ToString::to_string)
         .collect()
     }
 }

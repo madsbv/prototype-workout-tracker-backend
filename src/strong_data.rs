@@ -32,7 +32,7 @@ impl fmt::Display for StrongDuration {
         }
         parts.push(format!("{}s", self.seconds));
         let result = parts.join(" ");
-        write!(f, "{}", result)
+        write!(f, "{result}")
     }
 }
 
@@ -91,9 +91,9 @@ fn parse_suffixed_integer(s: &str, suffix: char) -> Result<u32, <StrongDuration 
     if chars[chars.len() - 1] != suffix {
         return Err(format!("Invalid suffix, should be {suffix}"));
     }
-    Ok(s[0..chars.len() - 1]
+    s[0..chars.len() - 1]
         .parse()
-        .map_err(|_| format!("Invalid number before suffix {suffix}"))?)
+        .map_err(|_| format!("Invalid number before suffix {suffix}"))
 }
 
 time::serde::format_description!(
@@ -188,7 +188,7 @@ Date,Workout Name,Duration,Exercise Name,Set Order,Weight,Reps,Distance,Seconds,
             },
             exercise_name: String::from("Incline Bench Press (Barbell)"),
             set_order: 1,
-            weight: 29.48350405,
+            weight: 29.483_504_05,
             reps: 5,
             distance: 0.0,
             seconds: 0,

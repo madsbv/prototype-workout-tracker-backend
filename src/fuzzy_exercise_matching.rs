@@ -3,10 +3,7 @@ use itertools::Itertools;
 use nucleo_matcher::{pattern::*, Matcher};
 
 /// Search `exercise_list` for exercises whose name and exercise type together match `name`. Return list of possible matches according to fuzzy finder (nucleo), sorted with the best match first.
-pub fn search_exercises<'a, 'b>(
-    name: &'a str,
-    exercise_list: &'b Vec<Exercise>,
-) -> Vec<&'b Exercise> {
+pub fn search_exercises<'b>(name: &str, exercise_list: &'b [Exercise]) -> Vec<&'b Exercise> {
     let mut matcher = Matcher::new(nucleo_matcher::Config::DEFAULT);
     let pattern = Pattern::parse(
         &simplify_exercise_name(name),
@@ -31,16 +28,13 @@ pub fn search_exercises<'a, 'b>(
         })
         .collect();
 
-    exercises_with_scores.sort_unstable_by_key(|&(_, score)| -(score as i64));
+    exercises_with_scores.sort_unstable_by_key(|&(_, score)| -i64::from(score));
     exercises_with_scores.iter().map(|&(ex, _)| ex).collect()
 }
 
 /// Get only the best match, if any.
-pub fn identify_exercise<'a, 'b>(
-    name: &'a str,
-    exercise_list: &'b Vec<Exercise>,
-) -> Option<&'b Exercise> {
-    Some(search_exercises(name, exercise_list).get(0)?)
+pub fn identify_exercise<'b>(name: &str, exercise_list: &'b [Exercise]) -> Option<&'b Exercise> {
+    Some(search_exercises(name, exercise_list).first()?)
 }
 
 // Try to strip out symbols and standardize certain words to improve search results

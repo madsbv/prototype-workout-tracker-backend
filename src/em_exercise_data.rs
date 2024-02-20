@@ -95,7 +95,7 @@ mod tests {
             .expect("test exercise specifications parse correctly")
         {
             // Every parsed exercise should train some muscle
-            assert!(record.muscles_trained.len() != 0);
+            assert!(!record.muscles_trained.is_empty());
             // For every exercise type, we should track *something*
             assert!(
                 record.tracking_config.weight
@@ -104,7 +104,7 @@ mod tests {
                     || record.tracking_config.distance
             );
             // Every exercise should have a non-empty name
-            assert!(record.name.len() != 0);
+            assert!(!record.name.is_empty());
             // We shouldn't have any pinned notes on directly parsed data
             assert!(Option::is_none(&record.pinned_note));
         }
