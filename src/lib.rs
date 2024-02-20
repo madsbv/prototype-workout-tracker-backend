@@ -1,4 +1,5 @@
 #![warn(clippy::all, clippy::pedantic)]
+// #![warn(clippy::cargo)]
 #![allow(
     clippy::missing_errors_doc,
     clippy::wildcard_imports,
