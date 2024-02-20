@@ -1,6 +1,10 @@
-// TODO: Tighten up linting
-#![allow(dead_code)]
-#![allow(unused_imports)]
+#![warn(clippy::all, clippy::pedantic)]
+// #![warn(clippy::cargo)]
+#![allow(
+    clippy::missing_errors_doc,
+    clippy::must_use_candidate,
+    clippy::struct_excessive_bools
+)]
 
 // PURPOSE: CLI interface to the main functionality of lib.rs.
 // TODO: Figure out how to use Clap. https://docs.rs/clap/latest/clap/
@@ -8,6 +12,7 @@
 use clap::{Parser, Subcommand};
 use std::{fs, io};
 use workout_tracker_backend::em_exercise_data::parse_em_spec_csv_to_exercises;
+use workout_tracker_backend::fuzzy_exercise_matching::search_exercises;
 use workout_tracker_backend::strong_data::StrongData;
 
 #[derive(Parser, Debug)]

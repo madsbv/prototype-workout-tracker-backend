@@ -2,7 +2,6 @@
 // #![warn(clippy::cargo)]
 #![allow(
     clippy::missing_errors_doc,
-    clippy::wildcard_imports,
     clippy::must_use_candidate,
     clippy::struct_excessive_bools
 )]

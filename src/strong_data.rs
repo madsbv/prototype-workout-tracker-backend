@@ -39,7 +39,7 @@ pub struct StrongData {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{parse_strong_csv_to_exercise_data, Duration, StrongData};
     use humantime;
 
     #[test]
