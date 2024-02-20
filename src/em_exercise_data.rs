@@ -87,13 +87,13 @@ where
 #[cfg(test)]
 mod tests {
     use super::parse_em_spec_csv_to_exercises;
-    use std::path::PathBuf;
 
     #[test]
     fn test_em_exercise_specs_parse() {
-        for record in
-            parse_em_spec_csv_to_exercises(&PathBuf::from("test_data/em_exercise_specs.csv"))
-                .expect("test exercise specifications parse correctly")
+        for record in parse_em_spec_csv_to_exercises(&std::path::PathBuf::from(
+            "test_data/em_exercise_specs.csv",
+        ))
+        .expect("test exercise specifications parse correctly")
         {
             // Every parsed exercise should train some muscle
             assert!(!record.muscles_trained.is_empty());
